@@ -24,7 +24,10 @@ public class UserService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setFullName(request.getFullName());
-        user.setRole(Role.CLIENT); // default to CLIENT
+
+        // Set role based on request or default to CLIENT
+        Role role = request.getRole() != null ? request.getRole() : Role.CLIENT;
+        user.setRole(role);
 
         userRepository.save(user);
     }
