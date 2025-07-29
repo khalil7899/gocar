@@ -50,4 +50,11 @@ public class AuthController {
 
         return ResponseEntity.ok(new LoginResponse(token, user.getRole()));
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        // Optionally log the logout event
+        return ResponseEntity.ok(Map.of("message", "User logged out successfully"));
+    }
+
 }
