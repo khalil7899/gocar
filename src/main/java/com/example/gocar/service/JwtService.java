@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
@@ -15,10 +16,9 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+//    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    private final String SECRET_KEY = "6evO03u5Zeug8nh+IhROt6SdBulOeN/3N82ZwS79+hn+mETh8hs9i7WSgbXowlIW\n" +
-            "BV82oFWB//JhU7sGUSM9Fw==";
+    private final String SECRET_KEY = "6evO03u5Zeug8nh+IhROt6SdBulOeN/3N82ZwS79+hn+mETh8hs9i7WSgbXowlIWBV82oFWB//JhU7sGUSM9Fw==";
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -34,13 +34,13 @@ public class JwtService {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
-                .signWith(key)
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String getEmailFromToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(getSignKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -75,7 +75,7 @@ public class JwtService {
     }
 
     private Key getSignKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
 }
 
